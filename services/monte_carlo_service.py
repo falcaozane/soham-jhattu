@@ -2,16 +2,21 @@ import numpy as np
 import pandas as pd
 
 def monteCarlo(df, assets, num_of_portfolios=100):
+    # Drop columns with all NaN values
+    df = df.dropna(axis=1, how='all')
+    if df.empty:
+        raise ValueError("No valid data available for Monte Carlo simulation")
+
     log_returns = np.log(1 + df.pct_change(fill_method=None))
 
-    all_weights = np.zeros((num_of_portfolios, len(assets)))
+    all_weights = np.zeros((num_of_portfolios, len(df.columns)))
 
     ret_arr = np.zeros(num_of_portfolios)
     vol_arr = np.zeros(num_of_portfolios)
     sharpe_arr = np.zeros(num_of_portfolios)
 
     for i in range(num_of_portfolios):
-        monte_weights = np.random.random(len(assets))
+        monte_weights = np.random.random(len(df.columns))
         monte_weights = monte_weights / np.sum(monte_weights)
 
         all_weights[i, :] = monte_weights

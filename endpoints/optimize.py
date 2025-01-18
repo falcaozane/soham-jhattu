@@ -7,10 +7,11 @@ import numpy as np
 import pandas as pd
 from sklearn.cluster import KMeans
 from sklearn.neighbors import KNeighborsClassifier
+from typing import Dict, List
 
 router = APIRouter()
 
-@router.post('/optimize')
+@router.post('/optimize', response_model=Dict[str, List[Dict[str, float]]], summary="Optimize Portfolio Allocation", description="Optimize the portfolio allocation based on lifestyle risk and expected ROI")
 async def optimize(request: OptimizeRequest):
     lifestyle_risk = request.lifestyle_risk
     expected_annual_roi = request.expected_annual_roi
@@ -90,6 +91,12 @@ async def optimize(request: OptimizeRequest):
         ticker = remove_spaces(row['Symbols'])
         assets = ticker.split(',')
         df = get_data(assets)
+
+        # Drop columns with all NaN values
+        df = df.dropna(axis=1, how='all')
+        if df.empty:
+            raise HTTPException(status_code=400, detail=f"No valid data available for the provided tickers: {ticker}")
+
         starting_amount = row['Weights']
         weights_allocated, annual_return, port_volatility, sharpe_ratio, max_df = optimize_portfolio(df, assets)
         del df

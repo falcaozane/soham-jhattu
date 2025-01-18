@@ -5,10 +5,11 @@ import numpy as np
 import pandas as pd
 from sklearn.cluster import KMeans
 from sklearn.neighbors import KNeighborsClassifier
+from typing import Dict, List
 
 router = APIRouter()
 
-@router.post('/weights')
+@router.post('/weights', response_model=Dict[str, List[Dict[str, float]]], summary="Get Weights for Clusters", description="Get the weights for different clusters based on lifestyle risk and expected ROI")
 async def weights(request: OptimizeRequest):
     lifestyle_risk = request.lifestyle_risk
     expected_annual_roi = request.expected_annual_roi

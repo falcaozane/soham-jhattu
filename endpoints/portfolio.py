@@ -3,15 +3,21 @@ from models import PortfolioRequest
 from services.data_service import get_data
 from services.monte_carlo_service import monteCarlo
 from utils import remove_spaces
+from typing import Dict, List
 
 router = APIRouter()
 
-@router.post('/portfolio')
+@router.post('/portfolio', response_model=Dict[str, List[Dict[str, float]]], summary="Optimize Portfolio", description="Optimize the portfolio based on Monte Carlo simulations")
 async def optimise_port(request: PortfolioRequest):
     ticker = remove_spaces(request.Symbols)
     assets = ticker.split(',')
     df = get_data(assets)
     sim_no = request.sim_no
+
+    # Drop columns with all NaN values
+    df = df.dropna(axis=1, how='all')
+    if df.empty:
+        raise HTTPException(status_code=400, detail="No valid data available for the provided tickers")
 
     # Monte Carlo Simulation
     num_of_portfolios = sim_no
