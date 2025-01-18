@@ -3,7 +3,7 @@ import pandas as pd
 from services.monte_carlo_service import monteCarlo
 
 def optimize_portfolio(df, assets):
-    num_of_portfolios = 10000
+    num_of_portfolios = 6000
     sim_df = monteCarlo(df, assets, num_of_portfolios)
     sim_df['Volatility'] = sim_df['Volatility'].round(2)
     idx = sim_df.groupby('Volatility')['Returns'].idxmax()

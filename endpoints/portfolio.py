@@ -1,13 +1,14 @@
 from fastapi import APIRouter, HTTPException
-from models import PortfolioRequest
+from models import PortfolioRequest, PortfolioResponse
 from services.data_service import get_data
 from services.monte_carlo_service import monteCarlo
 from utils import remove_spaces
 from typing import Dict, List
+import pandas as pd
 
 router = APIRouter()
 
-@router.post('/portfolio', response_model=Dict[str, List[Dict[str, float]]], summary="Optimize Portfolio", description="Optimize the portfolio based on Monte Carlo simulations")
+@router.post('/portfolio', response_model=PortfolioResponse, summary="Optimize Portfolio", description="Optimize the portfolio based on Monte Carlo simulations")
 async def optimise_port(request: PortfolioRequest):
     ticker = remove_spaces(request.Symbols)
     assets = ticker.split(',')
@@ -35,7 +36,7 @@ async def optimise_port(request: PortfolioRequest):
 
     # Creating DataFrame for weights
     weights_df = pd.DataFrame(optimal_weights, index=df.columns, columns=['Weights'])
-    weights_dict = weights_df.to_dict()
+    weights_dict = weights_df.to_dict(orient='index')
 
     return {
         "weights_df": weights_dict,

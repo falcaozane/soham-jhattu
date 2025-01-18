@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException
-from models import OptimizeRequest
+from models import OptimizeRequest, WeightsResponse
 from utils import calculate_probabilities
 import numpy as np
 import pandas as pd
@@ -9,7 +9,7 @@ from typing import Dict, List
 
 router = APIRouter()
 
-@router.post('/weights', response_model=Dict[str, List[Dict[str, float]]], summary="Get Weights for Clusters", description="Get the weights for different clusters based on lifestyle risk and expected ROI")
+@router.post('/weights', response_model=WeightsResponse, summary="Get Weights for Clusters", description="Get the weights for different clusters based on lifestyle risk and expected ROI")
 async def weights(request: OptimizeRequest):
     lifestyle_risk = request.lifestyle_risk
     expected_annual_roi = request.expected_annual_roi
@@ -77,4 +77,4 @@ async def weights(request: OptimizeRequest):
 
     clusters_df = pd.DataFrame(clusters_data)
     clusters_df['Weights'] = weights_df['Weight']
-    return {"type of person": x,"clusters": clusters_df.to_dict(orient='records')}
+    return {"type_of_person": x,"clusters": clusters_df.to_dict(orient='records')}

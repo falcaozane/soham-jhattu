@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException
-from models import OptimizeRequest
+from models import OptimizeRequest, OptimizeResponse
 from services.data_service import get_data
 from services.optimization_service import optimize_portfolio
 from utils import remove_spaces, calculate_probabilities
@@ -11,7 +11,7 @@ from typing import Dict, List
 
 router = APIRouter()
 
-@router.post('/optimize', response_model=Dict[str, List[Dict[str, float]]], summary="Optimize Portfolio Allocation", description="Optimize the portfolio allocation based on lifestyle risk and expected ROI")
+@router.post('/optimize', response_model=OptimizeResponse, summary="Optimize Portfolio Allocation", description="Optimize the portfolio allocation based on lifestyle risk and expected ROI")
 async def optimize(request: OptimizeRequest):
     lifestyle_risk = request.lifestyle_risk
     expected_annual_roi = request.expected_annual_roi
@@ -109,4 +109,4 @@ async def optimize(request: OptimizeRequest):
             "Array_of_allocations": max_df
         })
 
-    return {"type of person": x, "results": results, "clusters": clusters_df.to_dict(orient='records')}
+    return {"type_of_person": x, "results": results, "clusters": clusters_df.to_dict(orient='records')}
