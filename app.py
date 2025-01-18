@@ -78,7 +78,7 @@ def remove_spaces(text):
     return re.sub(r'\s+', '', text)
 
 def optimize_portfolio(df, assets):
-    num_of_portfolios = 6000
+    num_of_portfolios = 1000
     sim_df = monteCarlo(df, assets, num_of_portfolios)
     sim_df['Volatility'] = sim_df['Volatility'].round(2)
     idx = sim_df.groupby('Volatility')['Returns'].idxmax()
